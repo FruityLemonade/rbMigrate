@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Rekordbox Path Updater
+rbMigrate
 
 A tool to update file paths in your Rekordbox database after moving your music collection.
 This script updates the FolderPath field in the DjmdContent table and optionally updates
 the XML playlist files.
 
 Usage:
-    python rekordbox_path_updater.py [options]
+    python rbMigrate.py [options]
 
 Requirements:
     - Python 3.8+
@@ -513,27 +513,27 @@ def main():
         epilog="""
 Examples:
   # Interactive mode
-  python rekordbox_path_updater.py
+  python rbMigrate.py
 
   # Non-interactive with paths
-  python rekordbox_path_updater.py \\
+  python rbMigrate.py \\
       --old-path "~/path/to/old/music" \\
       --new-path "/Volumes/ExternalDisk/path/to/new/music"
 
   # Dry-run to preview changes
-  python rekordbox_path_updater.py \\
+  python rbMigrate.py \\
       --old-path "~/path/to/old/music" \\
       --new-path "/Volumes/ExternalDisk/path/to/new/music" \\
       --dry-run
 
   # With backup and XML update
-  python rekordbox_path_updater.py \\
+  python rbMigrate.py \\
       --old-path "~/path/to/old/music" \\
       --new-path "/Volumes/ExternalDisk/path/to/new/music" \\
       --backup --update-xml
 
   # Specify custom database path
-  python rekordbox_path_updater.py \\
+  python rbMigrate.py \\
       --db-path "/path/to/master.db" \\
       --old-path "~/path/to/old/music" \\
       --new-path "/Volumes/ExternalDisk/path/to/new/music"
