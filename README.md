@@ -20,7 +20,7 @@ rbMigrate is a tool to update file paths in your Rekordbox database after moving
 
 This project relies on the following open-source libraries:
 
-- **[pyrekordbox](https://github.com/kuwa72/pyrekordbox)** - Rekordbox database library for Python
+- **[pyrekordbox](https://github.com/dylanljones/pyrekordbox)** - Rekordbox database library for Python
 - **[sqlcipher3](https://github.com/coleifer/sqlcipher3)** - SQLite3 wrapper with SSL support
 - **[lxml](https://lxml.de/)** - XML and HTML parsing library
 - **[mutagen](https://github.com/quodlibet/mutagen)** - Audio metadata handling
