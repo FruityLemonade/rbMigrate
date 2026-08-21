@@ -60,7 +60,7 @@ python -c "import sqlcipher3; print(sqlcipher3.__version__)"
 ### 4. Run the Script
 
 ```bash
-python rekordbox_path_updater.py --old-path "~/path/to/old/musiclibrary" --new-path "/path/to/new/musiclibrary"
+python rbMigrate.py --old-path "~/path/to/old/musiclibrary" --new-path "/path/to/new/musiclibrary"
 ```
 
 **Note**: If you encounter permission errors, use the virtual environment method above instead of installing system-wide.
@@ -72,7 +72,7 @@ python rekordbox_path_updater.py --old-path "~/path/to/old/musiclibrary" --new-p
 Run the script without arguments to interactively set up the paths:
 
 ```bash
-python rekordbox_path_updater.py
+python rbMigrate.py
 ```
 
 The script will prompt you for:
@@ -84,7 +84,7 @@ The script will prompt you for:
 Specify all paths directly on the command line:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
 ```
@@ -94,7 +94,7 @@ python rekordbox_path_updater.py \
 ### Basic Usage
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
 ```
@@ -104,7 +104,7 @@ python rekordbox_path_updater.py \
 Preview what will change without modifying anything:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary" \
     --dry-run
@@ -115,7 +115,7 @@ python rekordbox_path_updater.py \
 Enable automatic backup and XML metadata updates:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary" \
     --backup \
@@ -127,7 +127,7 @@ python rekordbox_path_updater.py \
 Specify a custom database location:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --db-path "/path/to/PIONEER/Master/master.db" \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
@@ -138,7 +138,7 @@ python rekordbox_path_updater.py \
 Show detailed progress information:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary" \
     --verbose
@@ -149,7 +149,7 @@ python rekordbox_path_updater.py \
 Skip automatic backup creation (not recommended):
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary" \
     --no-backup
@@ -220,7 +220,7 @@ pip install sqlcipher3
 python3.11 -m venv venv
 source venv/bin/activate  # On macOS/Linux
 pip install pyrekordbox sqlcipher3
-python rekordbox_path_updater.py ...
+python rbMigrate.py ...
 ```
 
 ### Error: "Could not auto-detect database"
@@ -228,7 +228,7 @@ python rekordbox_path_updater.py ...
 **Solution**: Specify the database path manually:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --db-path "/path/to/PIONEER/Master/master.db" \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
@@ -239,7 +239,7 @@ python rekordbox_path_updater.py \
 **Solution**: Verify the path is correct. If the path is correct, you can continue:
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
 ```
@@ -270,7 +270,7 @@ Ensure you have write permissions to the database directory.
 
 1. Try running in verbose mode to see progress:
    ```bash
-   python rekordbox_path_updater.py --verbose ...
+   python rbMigrate.py --verbose ...
    ```
 2. Close Rekordbox before running the script
 3. Ensure the database is not being accessed by other processes
@@ -299,7 +299,7 @@ C:\\Users\\<username>\\AppData\\Roaming\\Pioneer DJ\\Rekordbox\\Master\\master.d
 If your database is in a custom location (as in your case):
 
 ```bash
-python rekordbox_path_updater.py \
+python rbMigrate.py \
     --db-path "/path/to/PIONEER/Master/master.db" \
     --old-path "~/path/to/old/musiclibrary" \
     --new-path "/path/to/new/musiclibrary"
