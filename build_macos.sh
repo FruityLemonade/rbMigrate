@@ -64,47 +64,35 @@ echo "==> Installing build and runtime dependencies..."
 "${PYTHON}" -m pip install --upgrade pip
 "${PYTHON}" -m pip install -r requirements.txt -r requirements-dev.txt
 
-# For Intel build, download a pre-built x86_64 Python
+# For Intel build, download a pre-built x86_64 Python.
+# The venv's interpreter symlinks point into TEMP_DIR, so TEMP_DIR must
+# stay alive for the whole run; clean it up on exit instead.
 PYTHON_INTEL=""
 VENV_INTEL_DIR=".venv-intel"
-PROJECT_ROOT="$(pwd)"  # Save project root before changing directories
 
-if [ ! -d "${VENV_INTEL_DIR}" ]; then
+if [ ! -x "${VENV_INTEL_DIR}/bin/python" ]; then
     echo "    Downloading x86_64 Python 3.11 for Intel build..."
     # Use latest release from astral-sh/python-build-standalone
     PYTHON_INTEL_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260814/cpython-3.11.16%2B20260814-x86_64-apple-darwin-install_only.tar.gz"
     TEMP_DIR=$(mktemp -d)
-    cd "${TEMP_DIR}"
-    
+    trap 'rm -rf "${TEMP_DIR}"' EXIT
+
     # Download x86_64 Python
-    curl -L -o python.tar.gz "${PYTHON_INTEL_URL}"
-    tar -xzf python.tar.gz
-    
-    # Create venv using the downloaded x86_64 Python
-    cd "${TEMP_DIR}/python/bin"
-    ./python3 -m venv "${TEMP_DIR}/venv-intel"
-    
-    echo "    Debug: venv created at ${TEMP_DIR}/venv-intel"
-    cd - > /dev/null
-    
-    echo "    Debug: venv location before move: ${TEMP_DIR}/venv-intel"
-    echo "    Debug: Current directory: $(pwd)"
-    
-    # Move venv to project root using absolute path
-    mv "${TEMP_DIR}/venv-intel" "${VENV_INTEL_DIR}"
-    echo "    Debug: venv moved to ${VENV_INTEL_DIR}"
-    
-    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"  # Update to new location
-    
-    # Go back to project root and install requirements
-    cd "${PROJECT_ROOT}"
-    echo "    Installing dependencies into x86_64 venv..."
-    "${PYTHON_INTEL}" -m pip install --upgrade pip
-    "${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
+    curl -sSL -o "${TEMP_DIR}/python.tar.gz" "${PYTHON_INTEL_URL}"
+    tar -xzf "${TEMP_DIR}/python.tar.gz" -C "${TEMP_DIR}"
+
+    # Create the venv directly at its final location so it never needs to move
+    # (moving a venv breaks bin/pip shebangs; creating in place avoids that)
+    echo "    Creating x86_64 virtual environment at ${VENV_INTEL_DIR} ..."
+    "${TEMP_DIR}/python/bin/python3" -m venv "${VENV_INTEL_DIR}"
 else
     echo "    Using existing Intel venv at ${VENV_INTEL_DIR}"
-    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
 fi
+
+echo "    Installing dependencies into x86_64 venv..."
+PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
+"${PYTHON_INTEL}" -m pip install --upgrade pip
+"${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
 
 echo "==> Building applications with PyInstaller..."
 
@@ -119,23 +107,10 @@ rm -rf build "${DIST_DIR}"
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-arm.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
-# Build Intel only using Rosetta
-echo "    Building macos-intel (using Rosetta)..."
-# Create x86_64 virtual environment for Intel build
-VENV_INTEL_DIR=".venv-intel"
-if [ -x "${VENV_INTEL_DIR}/bin/python" ]; then
-    echo "    Using existing Intel venv at ${VENV_INTEL_DIR}"
-    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
-else
-    echo "    Creating x86_64 virtual environment for Intel build..."
-    # Use arch -x86_64 to create an x86_64 venv
-    arch -x86_64 python3 -m venv "${VENV_INTEL_DIR}"
-    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
-fi
-"${PYTHON_INTEL}" -m pip install --upgrade pip
-"${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
+# Build Intel only (x86_64 interpreter runs transparently via Rosetta)
+echo "    Building macos-intel..."
 rm -rf build "${DIST_DIR}"
-arch -x86_64 "${PYTHON_INTEL}" -m PyInstaller --noconfirm rbMigrate-intel.spec
+"${PYTHON_INTEL}" -m PyInstaller --noconfirm rbMigrate-intel.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
