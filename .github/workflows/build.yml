@@ -46,4 +46,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: rbMigrate-windows
-          path: dist/rbMigrate.exe
+          path: dist/rbMigrate/rbMigrate.exe
