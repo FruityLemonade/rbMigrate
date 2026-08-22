@@ -4,6 +4,9 @@ rbMigrate is a tool to update file paths in your Rekordbox database after moving
 
 **Recommended:** Download the prebuilt GUI app from the [Releases](../../releases) page — no Python installation required.
 
+<img width="804" height="760" alt="Screenshot 2026-08-22 at 14 45 08" src="https://github.com/user-attachments/assets/a2273565-83b0-4d3a-b2e3-fee18f188f7e" />
+
+
 ## Features
 
 - ⭐️ **Automatic Path Replacement**: Updates all file paths in the database
