@@ -43,13 +43,57 @@ Download the latest release from the [Releases](../../releases) page:
 
 | Platform | Download | Quick Start |
 |----------|----------|-------------|
-| **macOS** | `rbMigrate-0.2.dmg` | 1. Double-click to open 2. Drag to Applications 3. Launch from Applications |
-| **Windows** | `rbMigrate-0.2.exe` | 1. Run the installer 2. Launch from Start menu |
+| **macOS** | `rbMigrate-arm-v*-*.dmg` (Apple Silicon M1–M4) or `rbMigrate-intel-v*-*.dmg` (Intel Macs) | 1. Double-click to open 2. Drag to Applications 3. Launch from Applications |
+| **Windows** | `rbMigrate.exe` | 1. Run the installer 2. Launch from Start menu |
+
+> **macOS users:** the first launch shows an *"Apple could not verify…"* security
+> prompt. This is expected for unsigned apps — see
+> [Opening rbMigrate on macOS](#opening-rbmigrate-on-macos) for a 30-second fix.
 
 **What's included:**
 - All dependencies (pyrekordbox, sqlcipher3, tkinter, etc.)
 - Ready to run — no Python setup needed
 - Verified on the target platform
+
+## Opening rbMigrate on macOS
+
+rbMigrate is not signed with an Apple Developer certificate, so macOS Gatekeeper
+blocks the first launch with:
+
+> **"Apple could not verify "rbMigrate-intel" is free of malware that may harm
+> your Mac or compromise your privacy."**
+
+This warning appears for *any* app distributed outside the App Store without a
+paid Apple developer notarization — it does not mean the app is malware. rbMigrate
+is open source, so you can audit everything it does in this repository. To open
+it anyway:
+
+### Method 1: System Settings (recommended)
+
+1. When the warning appears, click **Done** (do *not* click *Move to Trash*).
+2. Open **System Settings → Privacy & Security**.
+3. Scroll down to the **Security** section and find this message:
+   > `"rbMigrate-intel" was blocked from use because it is not from an identified developer.`
+4. Click **Allow Anyway**, then authenticate with your password or Touch ID.
+5. Launch the app again. A second dialog appears asking if you're sure —
+   click **Open**.
+
+The app opens normally, and macOS won't ask again for this version.
+
+### Method 2: Terminal one-liner
+
+The block is caused by the quarantine attribute macOS adds to downloaded files.
+Remove it once and launch normally afterwards:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/rbMigrate-intel.app
+```
+
+Adjust the path if you run the app from somewhere else (e.g. `~/Downloads`).
+
+> **Not sure which download you need?**
+> Click the Apple menu () → *About This Mac*. If the Chip/Processor line says
+> *Apple M1/M2/M3/M4*, use `rbMigrate-arm`; if it says *Intel*, use `rbMigrate-intel`.
 
 ## Installation
 
@@ -340,6 +384,11 @@ Automatic backup creation:
 
 ## Troubleshooting
 
+### macOS: "Apple could not verify 'rbMigrate-intel'…" when launching the app
+
+Gatekeeper blocks unsigned apps on first launch — this is expected, not malware.
+Follow the steps in [Opening rbMigrate on macOS](#opening-rbmigrate-on-macos).
+
 ### Error: "Required package not found: pyrekordbox"
 
 **Solution**: Install the required package:
@@ -513,6 +562,18 @@ If you encounter issues:
 This script is provided as-is for personal use. Use at your own risk.
 
 ## Changelog
+
+### Version 0.2.0 (2026-08-22)
+- Separate Apple Silicon and Intel builds (`rbMigrate-arm` / `rbMigrate-intel`)
+- Versioned DMG filenames (e.g. `rbMigrate-arm-v0.2.0-<timestamp>.dmg`)
+- App version shown in the GUI title bar, startup banner, and `--version` flag
+- macOS app bundle now carries its version in the Info.plist
+- Dropped the universal2 build: numpy and psutil don't publish universal2
+  wheels, so a fat binary can't be produced from pip-installed dependencies
+- Fixed Intel build failing in CI (x86_64 venv is now created in place instead
+  of moved)
+- Fixed ARM bundle being deleted before the Intel build finished
+- Documented how to open the unsigned app past macOS Gatekeeper
 
 ### Version 0.1 (2024-08-21)
 - Initial release
