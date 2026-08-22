@@ -68,7 +68,7 @@ exe = EXE(
     console=False,          # windowed app, no console window
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch="universal2",  # Build for both Intel and Apple Silicon
+    target_arch=None,  # Set via spec file generation script
     codesign_identity=None,
     entitlements_file=None,
 )

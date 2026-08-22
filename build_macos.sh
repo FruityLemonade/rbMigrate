@@ -66,24 +66,28 @@ echo "==> Installing build and runtime dependencies..."
 
 echo "==> Building applications with PyInstaller..."
 
+# Generate spec files for each architecture
+echo "    Generating spec files..."
+python3 generate_specs.py
+
 # Build ARM64 only
 echo "    Building macos-arm..."
 rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate.spec --target-architecture arm64
+"${PYTHON}" -m PyInstaller --noconfirm rbMigrate-arm.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-arm.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
 # Build Intel only
 echo "    Building macos-intel..."
 rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate.spec --target-architecture x86_64
+"${PYTHON}" -m PyInstaller --noconfirm rbMigrate-intel.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
 # Build Universal2 (both architectures)
 echo "    Building macos-universal..."
 rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate.spec --target-architecture universal2
+"${PYTHON}" -m PyInstaller --noconfirm rbMigrate-universal.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-universal.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-universal.app"
 
