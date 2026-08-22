@@ -83,11 +83,16 @@ if [ ! -d "${VENV_INTEL_DIR}" ]; then
     cd "${TEMP_DIR}/python/bin"
     ./python3 -m venv "${TEMP_DIR}/venv-intel"
     
+    echo "    Debug: venv created at ${TEMP_DIR}/venv-intel"
     cd - > /dev/null
-    rm -rf "${TEMP_DIR}"
     
-    # Move venv to project root
+    echo "    Debug: venv location before move: ${TEMP_DIR}/venv-intel"
+    echo "    Debug: Current directory: $(pwd)"
+    
+    # Move venv to project root using absolute path
     mv "${TEMP_DIR}/venv-intel" "${VENV_INTEL_DIR}"
+    echo "    Debug: venv moved to ${VENV_INTEL_DIR}"
+    
     PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"  # Update to new location
     
     echo "    Installing dependencies into x86_64 venv..."
