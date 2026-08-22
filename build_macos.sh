@@ -82,18 +82,17 @@ if [ ! -d "${VENV_INTEL_DIR}" ]; then
     # Create venv using the downloaded x86_64 Python
     cd "${TEMP_DIR}/python/bin"
     ./python3 -m venv "${TEMP_DIR}/venv-intel"
-    PYTHON_INTEL="${TEMP_DIR}/venv-intel/bin/python"
     
     cd - > /dev/null
     rm -rf "${TEMP_DIR}"
     
+    # Move venv to project root
+    mv "${TEMP_DIR}/venv-intel" "${VENV_INTEL_DIR}"
+    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"  # Update to new location
+    
     echo "    Installing dependencies into x86_64 venv..."
     "${PYTHON_INTEL}" -m pip install --upgrade pip
     "${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
-    
-    # Move venv to project root
-    mv "${TEMP_DIR}/venv-intel" "${VENV_INTEL_DIR}"
-    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
 else
     echo "    Using existing Intel venv at ${VENV_INTEL_DIR}"
     PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
