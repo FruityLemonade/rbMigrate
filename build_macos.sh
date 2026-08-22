@@ -79,8 +79,21 @@ echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
 # Build Intel only using Rosetta
 echo "    Building macos-intel (using Rosetta)..."
+# Create x86_64 virtual environment for Intel build
+VENV_INTEL_DIR=".venv-intel"
+if [ -x "${VENV_INTEL_DIR}/bin/python" ]; then
+    echo "    Using existing Intel venv at ${VENV_INTEL_DIR}"
+    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
+else
+    echo "    Creating x86_64 virtual environment for Intel build..."
+    # Use arch -x86_64 to create an x86_64 venv
+    arch -x86_64 python3 -m venv "${VENV_INTEL_DIR}"
+    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
+fi
+"${PYTHON_INTEL}" -m pip install --upgrade pip
+"${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
 rm -rf build "${DIST_DIR}"
-arch -x86_64 "${PYTHON}" -m PyInstaller --noconfirm rbMigrate-intel.spec
+arch -x86_64 "${PYTHON_INTEL}" -m PyInstaller --noconfirm rbMigrate-intel.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
