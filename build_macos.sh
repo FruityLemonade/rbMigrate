@@ -67,6 +67,7 @@ echo "==> Installing build and runtime dependencies..."
 # For Intel build, download a pre-built x86_64 Python
 PYTHON_INTEL=""
 VENV_INTEL_DIR=".venv-intel"
+PROJECT_ROOT="$(pwd)"  # Save project root before changing directories
 
 if [ ! -d "${VENV_INTEL_DIR}" ]; then
     echo "    Downloading x86_64 Python 3.11 for Intel build..."
@@ -95,6 +96,8 @@ if [ ! -d "${VENV_INTEL_DIR}" ]; then
     
     PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"  # Update to new location
     
+    # Go back to project root and install requirements
+    cd "${PROJECT_ROOT}"
     echo "    Installing dependencies into x86_64 venv..."
     "${PYTHON_INTEL}" -m pip install --upgrade pip
     "${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
