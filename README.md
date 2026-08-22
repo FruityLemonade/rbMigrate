@@ -1,6 +1,6 @@
 # rbMigrate - an Alpha Theta Rekordbox Path Updater
 
-rbMigrate is a tool to update file paths in your Rekordbox database after moving your music collection. It automatically updates the `FolderPath` field in the `DjmdContent` table and optionally updates XML playlist files. Useful for exporting your Rekordbox library to an external drive or new computer. Confirmed working with rekordbox v7.x. but should also work with v.5.8 and v.6x
+rbMigrate is a tool to update file paths in your Rekordbox database after moving your music collection. It automatically updates the `FolderPath` field in the `DjmdContent` table and optionally updates XML playlist files. Useful for exporting your Rekordbox library to an external drive or new computer. Confirmed working with rekordbox v7.x. but should also work with v.5.8. and v.6.x.
 
 **Recommended:** Download the prebuilt GUI app from the [Releases](../../releases) page — no Python installation required.
 
