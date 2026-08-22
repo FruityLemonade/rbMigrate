@@ -112,8 +112,10 @@ mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-arm.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
 # Build Intel only (x86_64 interpreter runs transparently via Rosetta)
+# Note: only clean the PyInstaller work dir here — wiping ${DIST_DIR}
+# would delete the ARM bundle built above.
 echo "    Building macos-intel..."
-rm -rf build "${DIST_DIR}"
+rm -rf build
 "${PYTHON_INTEL}" -m PyInstaller --noconfirm rbMigrate-intel.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
