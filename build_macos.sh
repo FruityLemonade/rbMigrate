@@ -70,17 +70,17 @@ echo "==> Building applications with PyInstaller..."
 echo "    Generating spec files..."
 python3 generate_specs.py
 
-# Build ARM64 only
+# Build ARM64 only (native on Apple Silicon)
 echo "    Building macos-arm..."
 rm -rf build "${DIST_DIR}"
 "${PYTHON}" -m PyInstaller --noconfirm rbMigrate-arm.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-arm.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
-# Build Intel only
-echo "    Building macos-intel..."
+# Build Intel only using Rosetta
+echo "    Building macos-intel (using Rosetta)..."
 rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate-intel.spec
+arch -x86_64 "${PYTHON}" -m PyInstaller --noconfirm rbMigrate-intel.spec
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
