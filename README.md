@@ -1,13 +1,7 @@
 <div>
-<img alt="rbMigrate" src="https://github.com/user-attachments/assets/bf65ed42-83ce-4b95-84de-4a176d536de7" />
+<img width="100" height="100" alt="rbMigrate" src="https://github.com/user-attachments/assets/bf65ed42-83ce-4b95-84de-4a176d536de7" />
 </div>
-<style>
-  img {
-      display: block;
-      margin: auto;
-      width: 100px;
-    }
-</style>
+
 # rbMigrate - a file path updater for Rekordbox.
 
 NOTE: rbMigrate is in no way affiliated with Alpha Theta / PioneerDJ or their Rekordbox software.
