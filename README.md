@@ -1,3 +1,6 @@
+<img width="1254" height="1254" alt="ChatGPT Image Aug 22, 2026 at 03_20_36 AM" src="https://github.com/user-attachments/assets/bf65ed42-83ce-4b95-84de-4a176d536de7" />
+
+
 # rbMigrate - a file path updater for Rekordbox.
 
 NOTE: rbMigrate is in no way affiliated with Alpha Theta / PioneerDJ or their Rekordbox software.
