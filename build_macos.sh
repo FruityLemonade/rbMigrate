@@ -64,6 +64,40 @@ echo "==> Installing build and runtime dependencies..."
 "${PYTHON}" -m pip install --upgrade pip
 "${PYTHON}" -m pip install -r requirements.txt -r requirements-dev.txt
 
+# For Intel build, download a pre-built x86_64 Python
+PYTHON_INTEL=""
+VENV_INTEL_DIR=".venv-intel"
+
+if [ ! -d "${VENV_INTEL_DIR}" ]; then
+    echo "    Downloading x86_64 Python 3.11 for Intel build..."
+    PYTHON_INTEL_URL="https://github.com/indygreg/python-build-standalone/releases/download/v3.11.9%2Bcpython-3.11.9/python-3.11.9%2Bcpython-3.11.9-macos11%2Bx86_64.tar.gz"
+    TEMP_DIR=$(mktemp -d)
+    cd "${TEMP_DIR}"
+    
+    # Download x86_64 Python
+    curl -L -o python.tar.gz "${PYTHON_INTEL_URL}"
+    tar -xzf python.tar.gz
+    
+    # Create venv using the downloaded x86_64 Python
+    cd "${TEMP_DIR}/python/bin"
+    ./python3 -m venv "${TEMP_DIR}/venv-intel"
+    PYTHON_INTEL="${TEMP_DIR}/venv-intel/bin/python"
+    
+    cd - > /dev/null
+    rm -rf "${TEMP_DIR}"
+    
+    echo "    Installing dependencies into x86_64 venv..."
+    "${PYTHON_INTEL}" -m pip install --upgrade pip
+    "${PYTHON_INTEL}" -m pip install -r requirements.txt -r requirements-dev.txt
+    
+    # Move venv to project root
+    mv "${TEMP_DIR}/venv-intel" "${VENV_INTEL_DIR}"
+    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
+else
+    echo "    Using existing Intel venv at ${VENV_INTEL_DIR}"
+    PYTHON_INTEL="${VENV_INTEL_DIR}/bin/python"
+fi
+
 echo "==> Building applications with PyInstaller..."
 
 # Generate spec files for each architecture
