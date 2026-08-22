@@ -1,19 +1,21 @@
 # rbMigrate - an Alpha Theta Rekordbox Path Updater
 
-rbMigrate is a tool to update file paths in your Rekordbox database after moving your music collection. This python script automatically updates the `FolderPath` field in the `DjmdContent` table and optionally updates XML playlist files. Useful for exporting your Rekordbox library to an external drive or new computer. Confirmed working with rekordbox v7.x. but should also work with v.5.8 and v.6x
+rbMigrate is a tool to update file paths in your Rekordbox database after moving your music collection. It automatically updates the `FolderPath` field in the `DjmdContent` table and optionally updates XML playlist files. Useful for exporting your Rekordbox library to an external drive or new computer. Confirmed working with rekordbox v7.x. but should also work with v.5.8 and v.6x
+
+**Recommended:** Download the prebuilt GUI app from the [Releases](../../releases) page — no Python installation required.
 
 ## Features
 
 - ⭐️ **Automatic Path Replacement**: Updates all file paths in the database
 - ⭐️ **Safety Features**:
   - Automatic backup creation before changes
-  - Dry-run mode to preview changes
+  - Preview mode to see changes before applying them
   - File existence validation
+- ⭐️ **Simple GUI**: Point-and-click wizard (macOS `.app` / Windows `.exe`) — recommended for most users
+- ⭐️ **CLI Tool**: Command-line interface for advanced users
 - ⭐️ **Flexible Configuration**:
-  - Interactive mode (prompts for paths)
-  - Command-line mode with all options
   - Auto-detection of database location
-- ⭐️ **Detailed Reporting**: Shows statistics and progress
+  - Detailed reporting with live log pane
 - ⭐️ **XML Support**: Optionally updates XML playlist metadata
 
 ## Dependencies
@@ -33,37 +35,162 @@ This project relies on the following open-source libraries:
 - pyrekordbox >= 0.4.0
 - sqlcipher3 (required for database access)
 
+## Downloads from Releases (Recommended)
+
+**Get the prebuilt app — no Python installation required.**
+
+Download the latest release from the [Releases](../../releases) page:
+
+| Platform | Download | Quick Start |
+|----------|----------|-------------|
+| **macOS** | `rbMigrate-0.2.dmg` | 1. Double-click to open 2. Drag to Applications 3. Launch from Applications |
+| **Windows** | `rbMigrate-0.2.exe` | 1. Run the installer 2. Launch from Start menu |
+
+**What's included:**
+- All dependencies (pyrekordbox, sqlcipher3, tkinter, etc.)
+- Ready to run — no Python setup needed
+- Verified on the target platform
+
 ## Installation
 
-### 1. Create Virtual Environment (Recommended)
+### Option 1: Download from Releases (Recommended)
+
+See [Downloads from Releases](#downloads-from-releases--recommended) above for platform-specific instructions.
+
+### Option 2: Build from Source
+
+If you prefer to build the app yourself, or need to customize it:
+
+#### Prerequisites
+
+- **macOS**: Python 3.8+ with tkinter (the build script creates its own venv)
+- **Windows**: Python 3.8+ (the build script creates its own venv)
+
+#### Build Steps
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-org/rbMigrate.git
+   cd rbMigrate
+   ```
+
+2. **Build the app** (macOS)
+   ```bash
+   ./build_macos.sh
+   ```
+   Produces `dist/rbMigrate.app` and `dist/rbMigrate-<timestamp>.dmg`.
+
+3. **Build the app** (Windows)
+   ```bat
+   build_windows.bat
+   ```
+   Produces `dist\rbMigrate.exe`.
+
+4. **Run from source** (optional)
+   ```bash
+   python rbMigrate_gui.py
+   ```
+
+See [Building a Distributable App](#building-a-distributable-app) for details.
+
+## GUI App
+
+The GUI is the recommended interface — a simple, point-and-click wizard with all the features you need.
+
+### Key Features
+
+**Database selection**
+- `Browse…` — open a file picker to select your Rekordbox `master.db`
+- `Auto-detect` — automatically finds your database location (works on most systems)
+- The file picker now correctly shows files ending in `.db` (not `.master.db`)
+
+**Path management**
+- Browse for old and new music folders
+- Real-time validation — the app checks that paths exist before proceeding
+- Path suggestions based on your OS (e.g., `~/Library/Application Support/Pioneer DJ/Rekordbox/Master/` on macOS)
+
+**Safety controls**
+- **Preview mode** — see exactly what will change before applying anything
+- **Backup creation** — automatic timestamped backup before each update
+- **Update DB** — apply the changes to your database
+
+**XML playlist metadata**
+- **Update XML** — optionally update XML playlist files (`masterPlaylists6.xml`, `automixPlaylist6.xml`)
+- When enabled, the app checks for XML files in the same directory as your database
+- If XML files don't exist, the toggle has no effect and 0 files are reported as updated
+- XML files are only updated with the product version to ensure consistency with the database
+
+**Live feedback**
+- Real-time log pane showing exactly what the engine is doing
+- Progress indicators for each step
+- Clear success/error messages
+
+### Using the GUI
+
+**Quick workflow:**
+1. Click **Preview changes** (default)
+2. Review the summary in the log pane
+3. If everything looks correct, click **Update DB**
+4. Confirm the update when prompted
+5. Close Rekordbox before updating to avoid database locks
+
+**Safety tips:**
+- Always run **Preview** first to see what will change
+- The app creates a backup automatically (unless you disable it)
+- Missing files at the new location are reported — the app won't update them
+- You can cancel at any time during the update process
+
+### Running from source
+
+If you prefer to run the GUI directly from source:
 
 ```bash
-python3.11 -m venv venv
-source venv/bin/activate  # On macOS/Linux
+python rbMigrate_gui.py
 ```
 
-### 2. Install Python Dependencies
+This is useful if you want to customize the code or develop new features.
+
+**Note:** The GUI is deliberately simple. For advanced use cases (custom database paths on the command line, verbose output, force mode), use the CLI tool instead.
+
+## Building a Distributable App
+
+Prebuilt installers can be built with **PyInstaller**. PyInstaller does **not**
+cross-compile, so:
+- The **macOS** build must run on a Mac.
+- The **Windows** build must run on Windows (or Windows CI).
+
+### Prerequisites
+
+- Python 3.8+ (the build creates its own venv)
+- The runtime dependencies install automatically via `requirements.txt`
+- `pyinstaller` (listed in `requirements-dev.txt`)
+
+### macOS
 
 ```bash
-pip install pyrekordbox sqlcipher3 lxml mutagen psutil sqlalchemy
+./build_macos.sh
 ```
 
-All required dependencies are listed in the [Dependencies](#dependencies) section above.
+Produces `dist/rbMigrate.app` and `dist/rbMigrate-<timestamp>.dmg`.
 
-### 3. Verify Installation
+### Windows
 
-```bash
-python -c "import pyrekordbox; print(pyrekordbox.__version__)"
-python -c "import sqlcipher3; print(sqlcipher3.__version__)"
+Run on a Windows machine:
+
+```bat
+build_windows.bat
 ```
 
-### 4. Run the Script
+Produces `dist\rbMigrate.exe`.
 
-```bash
-python rbMigrate.py --old-path "~/path/to/old/musiclibrary" --new-path "/path/to/new/musiclibrary"
-```
+### Automatically on GitHub (recommended for the .exe)
 
-**Note**: If you encounter permission errors, use the virtual environment method above instead of installing system-wide.
+If you don't have a Windows machine, push this repo to GitHub and the included
+workflow (`.github/workflows/build.yml`) builds **both** the macOS app and the
+Windows `.exe` on every push (and on demand via *Actions → Build → Run
+workflow*). Download them from the workflow's *Artifacts* section. GitHub's
+Windows runners typically come with a SQLCipher-compatible toolchain, and the
+build script installs the remaining dependencies.
 
 ## Setup
 
@@ -187,6 +314,23 @@ The script optionally updates XML playlist files (`masterPlaylists6.xml`, `autom
 - Maintains compatibility with Rekordbox
 - Does not modify file paths (XML files don't store them)
 
+**When XML files are missing:**
+
+If the "Update XML" toggle is enabled but no XML files exist in the database directory:
+- The app silently skips the update
+- 0 files are reported as updated in the log
+- No error or warning is raised
+- This is expected behavior when you have a fresh database with no playlist files
+
+**How it works:**
+
+The XML files are located in the same directory as your `master.db` file:
+- macOS: `~/Library/Pioneer/rekordbox/masterPlaylists6.xml`
+- macOS: `~/Library/Pioneer/rekordbox/automixPlaylist6.xml`
+- Windows: `C:\Users\<username>\AppData\Roaming\Pioneer DJ\Rekordbox\masterPlaylists6.xml`
+
+The app only updates XML files that actually exist on your system.
+
 ### Backup
 
 Automatic backup creation:
@@ -308,7 +452,7 @@ python rbMigrate.py \
 ## Safety Best Practices
 
 1. **Always create a backup** before making changes
-2. **Use dry-run mode** first to preview changes
+2. **Use Preview mode** first to see what will change
 3. **Verify file locations** before running
 4. **Close Rekordbox** while the script is running
 5. **Keep multiple backups** in case you need to restore
@@ -374,7 +518,7 @@ This script is provided as-is for personal use. Use at your own risk.
 - Initial release
 - Database path update functionality
 - Backup creation
-- Dry-run mode
+- Preview mode for safe updates
 - XML metadata update
 - Detailed reporting
 - Comprehensive error handling

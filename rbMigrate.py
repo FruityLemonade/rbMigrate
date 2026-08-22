@@ -40,6 +40,7 @@ class PathUpdater:
         update_xml: bool = False,
         verbose: bool = False,
         force_continue: bool = False,
+        auto_confirm: bool = False,
         is_interactive: bool = False,
     ):
         """
@@ -54,6 +55,7 @@ class PathUpdater:
             update_xml: If True, update XML playlist files.
             verbose: If True, show detailed output.
             force_continue: If True, skip interactive prompts.
+            auto_confirm: If True, skip the final confirmation prompt (used by GUI).
             is_interactive: If True, script is running in interactive mode.
         """
         self.dry_run = dry_run
@@ -64,6 +66,7 @@ class PathUpdater:
         self.old_path = old_path
         self.new_path = new_path
         self.force_continue = force_continue
+        self.auto_confirm = auto_confirm
         self.is_interactive = is_interactive
         self.db = None
 
@@ -92,8 +95,38 @@ class PathUpdater:
             from pyrekordbox.config import get_pioneer_install_dir
             pioneer_dir = get_pioneer_install_dir()
             if pioneer_dir:
-                db_path = pioneer_dir / "Master" / "master.db"
-                if db_path.exists():
+                # Try multiple common directory structures
+                # 1. Direct Pioneer/rekordbox/master.db (common on macOS)
+                # 2. Pioneer/Master/master.db (legacy)
+                # 3. Application Support/Pioneer/rekordbox/master.db (non-standard but common)
+                # 4. Application Support/Pioneer DJ/Rekordbox/Master/master.db (standard)
+                possible_paths = []
+
+                # Check Pioneer/rekordbox/master.db (common on macOS)
+                if pioneer_dir and (pioneer_dir / "rekordbox" / "master.db").exists():
+                    possible_paths.append(pioneer_dir / "rekordbox" / "master.db")
+
+                # Check Pioneer/rekordbox/master.db (non-standard but common)
+                pioneer = Path.home() / "Library" / "Pioneer"
+                if pioneer and (pioneer / "rekordbox" / "master.db").exists():
+                    possible_paths.append(pioneer / "rekordbox" / "master.db")
+
+                # Check Pioneer/Master/master.db (legacy)
+                if pioneer and (pioneer / "Master" / "master.db").exists():
+                    possible_paths.append(pioneer / "Master" / "master.db")
+
+                # Check Application Support/Pioneer/rekordbox/master.db (non-standard but common)
+                app_support = Path.home() / "Library" / "Application Support"
+                if app_support and (app_support / "Pioneer" / "rekordbox" / "master.db").exists():
+                    possible_paths.append(app_support / "Pioneer" / "rekordbox" / "master.db")
+
+                # Check Application Support/Pioneer DJ/Rekordbox/Master/master.db (standard)
+                if app_support and (app_support / "Pioneer DJ" / "Rekordbox" / "Master" / "master.db").exists():
+                    possible_paths.append(app_support / "Pioneer DJ" / "Rekordbox" / "Master" / "master.db")
+
+                # Return the first valid path found
+                if possible_paths:
+                    db_path = possible_paths[0]
                     self.verbose_print(f"Auto-detected database path: {db_path}")
                     return str(db_path)
         except Exception as e:
@@ -329,16 +362,17 @@ class PathUpdater:
             print(f"... and {len(tracks) - 10} more track(s)")
             print()
 
+        # Confirm (skipped in dry-run; GUI confirms via its own dialog)
         if self.dry_run:
             print("\n[DRY-RUN MODE] No changes were made.")
             print("Run without --dry-run to apply changes.")
             return
 
-        # Confirm
-        response = input(f"\nUpdate {len(tracks)} track(s)? (y/N): ").strip().lower()
-        if response != 'y':
-            print("Update cancelled.")
-            return
+        if not (self.force_continue or self.auto_confirm):
+            response = input(f"\nUpdate {len(tracks)} track(s)? (y/N): ").strip().lower()
+            if response != 'y':
+                print("Update cancelled.")
+                return
 
         # Create backup if requested
         if self.backup:
