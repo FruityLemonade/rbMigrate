@@ -70,7 +70,7 @@ VENV_INTEL_DIR=".venv-intel"
 
 if [ ! -d "${VENV_INTEL_DIR}" ]; then
     echo "    Downloading x86_64 Python 3.11 for Intel build..."
-    PYTHON_INTEL_URL="https://github.com/indygreg/python-build-standalone/releases/download/v3.11.9%2Bcpython-3.11.9/python-3.11.9%2Bcpython-3.11.9-macos11%2Bx86_64.tar.gz"
+    PYTHON_INTEL_URL="https://github.com/astral-sh/python-build-standalone/releases/download/v3.11.9%2Bcpython-3.11.9/python-3.11.9%2Bcpython-3.11.9-macos11%2Bx86_64.tar.gz"
     TEMP_DIR=$(mktemp -d)
     cd "${TEMP_DIR}"
     
