@@ -70,7 +70,8 @@ VENV_INTEL_DIR=".venv-intel"
 
 if [ ! -d "${VENV_INTEL_DIR}" ]; then
     echo "    Downloading x86_64 Python 3.11 for Intel build..."
-    PYTHON_INTEL_URL="https://github.com/astral-sh/python-build-standalone/releases/download/v3.11.9%2Bcpython-3.11.9/python-3.11.9%2Bcpython-3.11.9-macos11%2Bx86_64.tar.gz"
+    # Use latest release from astral-sh/python-build-standalone
+    PYTHON_INTEL_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260814/cpython-3.11.16%2B20260814-x86_64-apple-darwin-install_only.tar.gz"
     TEMP_DIR=$(mktemp -d)
     cd "${TEMP_DIR}"
     
