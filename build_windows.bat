@@ -37,14 +37,26 @@ if exist %DIST_DIR% rmdir /s /q %DIST_DIR%
 pyinstaller --noconfirm rbMigrate.spec
 if errorlevel 1 goto :error
 
-if not exist "%DIST_DIR%\rbMigrate.exe" (
-    echo ERROR: expected build output not found at %DIST_DIR%\rbMigrate.exe
+REM PyInstaller creates the exe in dist\rbMigrate\rbMigrate.exe (Windows)
+REM or dist\rbMigrate\rbMigrate (macOS). Check both locations.
+if exist "%DIST_DIR%\rbMigrate\rbMigrate.exe" (
+    set EXE_PATH=%DIST_DIR%\rbMigrate\rbMigrate.exe
+) else if exist "%DIST_DIR%\rbMigrate\rbMigrate" (
+    set EXE_PATH=%DIST_DIR%\rbMigrate\rbMigrate
+) else (
+    echo ERROR: expected build output not found
+    dir /b %DIST_DIR%
+    goto :error
+)
+
+if not exist "%EXE_PATH%" (
+    echo ERROR: expected build output not found at %EXE_PATH%
     goto :error
 )
 
 echo.
 echo Done!
-echo   Exe: %DIST_DIR%\rbMigrate.exe
+echo   Exe: %EXE_PATH%
 goto :eof
 
 :error
