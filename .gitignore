@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build output
+build/
+dist/
+*.spec.bak
+.pyi-cache/
+
+# PyInstaller
+*.manifest
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+
+# Tooling-local state (Reasonix) — not part of the app
+reasonix.toml
+.reasonix/

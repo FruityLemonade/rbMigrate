@@ -1,0 +1,8 @@
+# Runtime dependencies for rbMigrate (CLI and GUI).
+# Matches the libraries listed in the README "Dependencies" section.
+pyrekordbox>=0.4.0
+sqlcipher3
+lxml
+mutagen
+sqlalchemy
+psutil
