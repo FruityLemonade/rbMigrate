@@ -11,6 +11,10 @@
 from PyInstaller.utils.hooks import collect_all
 import sys
 
+# PyInstaller doesn't put the spec's directory on sys.path when it execs
+# this file; SPECPATH is a built-in spec global pointing at that directory.
+sys.path.insert(0, SPECPATH)
+
 from version import APP_VERSION
 
 block_cipher = None
