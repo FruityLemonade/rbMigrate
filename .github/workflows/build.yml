@@ -26,8 +26,12 @@ jobs:
         with:
           name: rbMigrate-macos
           path: |
-            dist/rbMigrate.app
-            dist/rbMigrate-*.dmg
+            dist/rbMigrate-arm.app
+            dist/rbMigrate-arm-*.dmg
+            dist/rbMigrate-intel.app
+            dist/rbMigrate-intel-*.dmg
+            dist/rbMigrate-universal.app
+            dist/rbMigrate-universal-*.dmg
 
   build-windows:
     name: Build Windows exe

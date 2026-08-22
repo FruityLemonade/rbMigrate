@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 #
-# Build the rbMigrate macOS application (.app) and disk image (.dmg).
+# Build the rbMigrate macOS application (.app) and disk images (.dmg).
+#
+# Builds three versions:
+#   1. macos-arm - Apple Silicon only
+#   2. macos-intel - Intel only
+#   3. macos-universal - Both architectures
 #
 # PyInstaller needs a Python that has tkinter compiled in (the GUI's UI
 # toolkit). The system python.org "framework" build ships tkinter; Homebrew's
@@ -20,8 +25,6 @@ cd "$(dirname "$0")"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 VENV_DIR=".venv"
 DIST_DIR="dist"
-DMG_NAME="rbMigrate-${STAMP}.dmg"
-APP_BUNDLE="${DIST_DIR}/rbMigrate.app"
 
 echo "==> Preparing Python environment..."
 
@@ -61,39 +64,58 @@ echo "==> Installing build and runtime dependencies..."
 "${PYTHON}" -m pip install --upgrade pip
 "${PYTHON}" -m pip install -r requirements.txt -r requirements-dev.txt
 
-echo "==> Building the application with PyInstaller..."
+echo "==> Building applications with PyInstaller..."
+
+# Build ARM64 only
+echo "    Building macos-arm..."
 rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate.spec
+"${PYTHON}" -m PyInstaller --noconfirm --target-architecture arm64 rbMigrate.spec
+mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-arm.app"
+echo "      Bundle built: ${DIST_DIR}/rbMigrate-arm.app"
 
-if [ ! -d "${APP_BUNDLE}" ]; then
-    echo "ERROR: expected PyInstaller output not found at ${APP_BUNDLE}" >&2
-    exit 1
-fi
-echo "    Bundle built: ${APP_BUNDLE}"
+# Build Intel only
+echo "    Building macos-intel..."
+rm -rf build "${DIST_DIR}"
+"${PYTHON}" -m PyInstaller --noconfirm --target-architecture x86_64 rbMigrate.spec
+mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
+echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
-echo "==> Creating disk image (.dmg)..."
-STAGING_DIR="${DIST_DIR}/staging"
-rm -rf "${STAGING_DIR}"
-mkdir -p "${STAGING_DIR}"
-cp -R "${APP_BUNDLE}" "${STAGING_DIR}/"
+# Build Universal2 (both architectures)
+echo "    Building macos-universal..."
+rm -rf build "${DIST_DIR}"
+"${PYTHON}" -m PyInstaller --noconfirm --target-architecture universal2 rbMigrate.spec
+mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-universal.app"
+echo "      Bundle built: ${DIST_DIR}/rbMigrate-universal.app"
 
-if hdiutil create \
-    -volname "rbMigrate" \
-    -srcfolder "${STAGING_DIR}" \
-    -ov \
-    -format UDZO \
-    "${DIST_DIR}/${DMG_NAME}" 2>/dev/null; then
+# Create DMGs
+echo "==> Creating disk images (.dmg)..."
+
+for app in "${DIST_DIR}/rbMigrate-"*.app; do
+    APP_NAME=$(basename "${app}" .app)
+    DMG_NAME="${DIST_DIR}/${APP_NAME}-${STAMP}.dmg"
+    STAGING_DIR="${DIST_DIR}/staging-${APP_NAME}"
+    
     rm -rf "${STAGING_DIR}"
-    echo ""
-    echo "Done!"
-    echo "  App: ${DIST_DIR}/rbMigrate.app"
-    echo "  DMG: ${DIST_DIR}/${DMG_NAME}"
-else
-    echo ""
-    echo "  App built: ${DIST_DIR}/rbMigrate.app"
-    echo "  WARNING: could not create the .dmg (${DMG_NAME})."
-    echo "  The .dmg step requires macOS disk-image privileges. You can"
-    echo "  either run this script on your normal Mac session, or drag"
-    echo "  ${APP_BUNDLE} into your Applications folder directly."
-    rm -rf "${STAGING_DIR}"
-fi
+    mkdir -p "${STAGING_DIR}"
+    cp -R "${app}" "${STAGING_DIR}/"
+    
+    if hdiutil create \
+        -volname "rbMigrate" \
+        -srcfolder "${STAGING_DIR}" \
+        -ov \
+        -format UDZO \
+        "${DMG_NAME}" 2>/dev/null; then
+        rm -rf "${STAGING_DIR}"
+        echo ""
+        echo "Done!"
+        echo "  ${APP_NAME}: ${DMG_NAME}"
+    else
+        echo ""
+        echo "  ${APP_NAME}: ${STAGING_DIR}/${APP_NAME}.app"
+        echo "  WARNING: could not create the .dmg (${DMG_NAME})."
+        echo "  The .dmg step requires macOS disk-image privileges. You can"
+        echo "  either run this script on your normal Mac session, or drag"
+        echo "  ${app} into your Applications folder directly."
+        rm -rf "${STAGING_DIR}"
+    fi
+done
