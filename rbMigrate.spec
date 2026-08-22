@@ -11,6 +11,8 @@
 from PyInstaller.utils.hooks import collect_all
 import sys
 
+from version import APP_VERSION
+
 block_cipher = None
 
 # PyInstaller ships dedicated hooks for sqlalchemy, lxml, mutagen, and psutil,
@@ -97,5 +99,7 @@ if sys.platform == "darwin":
         info_plist={
             "NSHighResolutionCapable": True,
             "NSHumanReadableCopyright": "rbMigrate",
+            "CFBundleShortVersionString": APP_VERSION,
+            "CFBundleVersion": APP_VERSION,
         },
     )

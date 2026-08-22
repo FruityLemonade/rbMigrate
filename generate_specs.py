@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate three PyInstaller spec files with different architectures:
+Generate PyInstaller spec files with different architectures:
 - rbMigrate-arm.spec (Apple Silicon only)
 - rbMigrate-intel.spec (Intel only)
-- rbMigrate-universal.spec (Both architectures)
+
+Note: no universal2 build — numpy and psutil don't publish universal2
+wheels, so a fat binary can't be produced from pip-installed deps.
 """
 
 import re
@@ -17,7 +19,6 @@ with open('rbMigrate.spec', 'r') as f:
 architectures = {
     'arm': 'arm64',
     'intel': 'x86_64',
-    'universal': 'universal2',
 }
 
 # Generate spec files for each architecture

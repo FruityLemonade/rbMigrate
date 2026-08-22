@@ -30,8 +30,6 @@ jobs:
             dist/rbMigrate-arm-*.dmg
             dist/rbMigrate-intel.app
             dist/rbMigrate-intel-*.dmg
-            dist/rbMigrate-universal.app
-            dist/rbMigrate-universal-*.dmg
 
   build-windows:
     name: Build Windows exe

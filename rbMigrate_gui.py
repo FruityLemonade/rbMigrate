@@ -27,10 +27,12 @@ from tkinter import filedialog, messagebox, ttk
 
 try:
     from rbMigrate import PathUpdater
+    from version import APP_VERSION
 except ImportError:
     # Allow running with ``python rbMigrate_gui.py`` from any directory.
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from rbMigrate import PathUpdater
+    from version import APP_VERSION
 
 
 class QueueWriter:
@@ -53,7 +55,7 @@ class MigrateApp(tk.Tk):
 
     def __init__(self):
         super().__init__()
-        self.title("rbMigrate — Rekordbox Path Updater")
+        self.title(f"rbMigrate v{APP_VERSION} — Rekordbox Path Updater")
         self.minsize(680, 620)
 
         self.log_queue: "queue.Queue[str]" = queue.Queue()
@@ -157,6 +159,7 @@ class MigrateApp(tk.Tk):
         # gotcha: writing `"text\n" "=" * 80` concatenates `"text\n"` and `"="`
         # first, then multiplies the WHOLE thing by 80.
         lines = (
+            f"rbMigrate v{APP_VERSION}\n"
             "Close Rekordbox before scanning or updating to avoid database "
             "locks.\n"
             "Start with \"Preview changes\", then review the summary before "

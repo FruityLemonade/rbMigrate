@@ -2,10 +2,13 @@
 #
 # Build the rbMigrate macOS application (.app) and disk images (.dmg).
 #
-# Builds three versions:
+# Build two versions:
 #   1. macos-arm - Apple Silicon only
 #   2. macos-intel - Intel only
-#   3. macos-universal - Both architectures
+#
+# No universal2 build: numpy and psutil don't publish universal2 wheels,
+# so PyInstaller can't produce a fat binary bundle (see pyinstaller.org
+# feature-notes on macOS multi-arch support).
 #
 # PyInstaller needs a Python that has tkinter compiled in (the GUI's UI
 # toolkit). The system python.org "framework" build ships tkinter; Homebrew's
@@ -23,10 +26,11 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
+VERSION="$(python3 -c 'from version import APP_VERSION; print(APP_VERSION)')"
 VENV_DIR=".venv"
 DIST_DIR="dist"
 
-echo "==> Preparing Python environment..."
+echo "==> Preparing Python environment (rbMigrate v${VERSION})..."
 
 pick_base_python() {
     # Return a python binary that can import _tkinter, else the default.
@@ -114,19 +118,15 @@ rm -rf build "${DIST_DIR}"
 mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-intel.app"
 echo "      Bundle built: ${DIST_DIR}/rbMigrate-intel.app"
 
-# Build Universal2 (both architectures)
-echo "    Building macos-universal..."
-rm -rf build "${DIST_DIR}"
-"${PYTHON}" -m PyInstaller --noconfirm rbMigrate-universal.spec
-mv "${DIST_DIR}/rbMigrate.app" "${DIST_DIR}/rbMigrate-universal.app"
-echo "      Bundle built: ${DIST_DIR}/rbMigrate-universal.app"
+# No universal2 build: numpy and psutil don't publish universal2 wheels,
+# so PyInstaller can't collect a fat binary bundle from pip-installed deps.
 
 # Create DMGs
 echo "==> Creating disk images (.dmg)..."
 
 for app in "${DIST_DIR}/rbMigrate-"*.app; do
     APP_NAME=$(basename "${app}" .app)
-    DMG_NAME="${DIST_DIR}/${APP_NAME}-${STAMP}.dmg"
+    DMG_NAME="${DIST_DIR}/${APP_NAME}-v${VERSION}-${STAMP}.dmg"
     STAGING_DIR="${DIST_DIR}/staging-${APP_NAME}"
     
     rm -rf "${STAGING_DIR}"

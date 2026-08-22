@@ -23,6 +23,8 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Optional
 
+from version import APP_VERSION
+
 # Lazy imports to avoid SQLAlchemy hanging during initial import
 # These are imported inside methods when needed
 
@@ -572,6 +574,12 @@ Examples:
       --old-path "~/path/to/old/music" \\
       --new-path "/Volumes/ExternalDisk/path/to/new/music"
         """
+    )
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"rbMigrate {APP_VERSION}",
     )
 
     parser.add_argument(
